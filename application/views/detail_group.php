@@ -11,10 +11,10 @@ $id_group = $this->uri->segment(3, 0);
         <div class="card-header">
 
             <div class="btn-group">
-                <button class="btn btn-outline-primary mt-1 btn-sm mx-1" data-toggle="modal"
-                    data-target="#add-user-target">Tambah
+                <button class="btn btn-outline-primary mt-1 btn-sm mx-1" data-toggle="modal" data-target="#add-user-target">Tambah
                     user
                     target</button>
+                <a class="btn btn-outline-primary mt-1 btn-sm mx-1" href="<?= base_url('monitor/export_excel/' . $id_group) ?>">Export</a>
                 <button class="btn btn-primary scrap mt-1 btn-sm mx-1" data-id="<?= $id_group ?>">Scrap Account</button>
             </div>
         </div>
@@ -25,40 +25,43 @@ $id_group = $this->uri->segment(3, 0);
                         <th>Username</th>
                         <th class="d-none d-lg-table-cell">Name</th>
                         <th>USERUID</th>
+                        <th>Total Absent</th>
+                        <th>Pay</th>
                         <th>Public</th>
                         <th class="d-none d-lg-table-cell">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                        foreach ($all_target as $target) {
-                            # code...
-                            ?>
-                    <tr>
-                        <td><?= $target->username ?></td>
-                        <td class="d-none d-lg-table-cell"><?= $target->name ?></td>
-                        <td><?= $target->useruid ?></td>
-                        <td>
-                            <?php 
-                                if($target->is_public == 1){
-                                    ?>
-                            <label for="" class="badge badge-success">YES</label>
-                            <?php
-                                }else {
-                                    ?>
-                            <label for="" class="badge badge-danger">NO</label>
-                            <?php
+                    foreach ($all_target as $target) {
+                        # code...
+                    ?>
+                        <tr>
+                            <td><?= $target->username ?></td>
+                            <td class="d-none d-lg-table-cell"><?= $target->name ?></td>
+                            <td><?= $target->useruid ?></td>
+                            <td><?= $target->total_absence ?></td>
+                            <td><?= $target->total_absence * 50000 ?></td>
+                            <td>
+                                <?php
+                                if ($target->is_public == 1) {
+                                ?>
+                                    <label for="" class="badge badge-success">YES</label>
+                                <?php
+                                } else {
+                                ?>
+                                    <label for="" class="badge badge-danger">NO</label>
+                                <?php
                                 }
-                            ?>
-                        </td>
-                        <td class="d-none d-lg-table-cell">
-                            <button class="btn btn-danger delete btn-sm"
-                                data-id="<?= $target->id_target ?>">hapus</button>
+                                ?>
+                            </td>
+                            <td class="d-none d-lg-table-cell">
+                                <button class="btn btn-danger delete btn-sm" data-id="<?= $target->id_target ?>">hapus</button>
 
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
                     <?php
-                        }                   
+                    }
                     ?>
                 </tbody>
             </table>
@@ -77,8 +80,7 @@ $id_group = $this->uri->segment(3, 0);
             <div class="modal-body">
                 <form action="<?= base_url('monitor/add_user_target') ?>" method="POST" id="add-group-form">
                     <div class="form-group">
-                        <textarea id="" cols="30" name="targets" rows="10" class="form-control"
-                            placeholder="username dipisahkan dengan ',' "></textarea>
+                        <textarea id="" cols="30" name="targets" rows="10" class="form-control" placeholder="username dipisahkan dengan ',' "></textarea>
                         <input type="hidden" name="id_group" value="<?= $id_group ?>">
                     </div>
                 </form>
