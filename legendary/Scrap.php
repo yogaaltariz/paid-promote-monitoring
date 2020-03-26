@@ -21,7 +21,7 @@ class Scrap
 		foreach ($this->sheet as $line) {
 			$data = $this->scrapingUser($line);
 			$uid = $data->{'graphql'}->{'user'}->{'id'};
-			$name = $data->{'graphql'}->{'user'}->{'full_name'};
+			$name = mysqli_escape_string($data->{'graphql'}->{'user'}->{'full_name'});
 			$stats = 0;
 			if ($data->{'graphql'}->{'user'}->{'is_private'} == false) {
 				$stats = 1;
