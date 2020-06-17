@@ -59,8 +59,7 @@ class Monitor extends CI_Controller
 
         else if ($this->input->server('REQUEST_METHOD') == 'POST') {
             $data['text'] = $this->input->post('hashtag');
-            // deadline 24 jam
-            $data['deadline'] = time() + (3600 * 7) + (3600 * 24);
+            $this->db->set('deadline','NOW() + INTERVAL 1 DAY',FALSE);
             $this->db->insert('pp_hashtag', $data);
             redirect('monitor/hashtags');
         }
@@ -180,8 +179,8 @@ class Monitor extends CI_Controller
                         $post_time = (int) $post->taken_at_timestamp;
                         $monResult[$x]['posted'] = true;
                         $monResult[$x]['shortcode'] = $shortcode;
-                        $monResult[$x]['timestamp'] = $post_time + (3600 * 7);
-                        $monResult[$x]['postTime'] = gmdate("Y-m-d H:i:s", $post_time + (3600 * 7));
+                        $monResult[$x]['timestamp'] = $post_time + (3600 * 7 * 24);
+                        $monResult[$x]['postTime'] = gmdate("Y-m-d H:i:s", $post_time + (3600 * 24 * 7));
                         $postedcnt++;
                         break;
                     }
@@ -190,19 +189,17 @@ class Monitor extends CI_Controller
             }
         }
         $tag = $this->db->get_where('pp_hashtag', ['text' => $hashtag])->row();
-        $now = (int) time() + (3600 * 7);
+        $now = date("Y-m-d H:i:s");
         foreach ($monResult as $user) {
-            if ($now >= $tag->deadline) {
-                if ($user['posted'] && $user['timestamp'] >= $tag->deadline) {
-                    $this->absent->insertAbsent($user['useruid'], $hashtag);
-                } else if (!$user['posted']) {
+            
+            if($user['useruid']){
+                if (($user['posted'] && date("Y-m-d H:i:s",$user['timestamp']) >= $tag->deadline) || (!$user['posted'] && $now >= $tag->deadline)) {
                     $this->absent->insertAbsent($user['useruid'], $hashtag);
                 } else {
                     $this->absent->deleteAbsent($user['useruid'], $hashtag);
                 }
-            } else {
-                $this->absent->deleteAbsent($user['useruid'], $hashtag);
             }
+            
             $totalAbsent = count($this->db->get_where('pp_absent', ["user_id" => $user['useruid']])->result());
             $this->db->set('total_absence', $totalAbsent);
             $this->db->where('useruid', $user['useruid']);
@@ -247,10 +244,9 @@ class Monitor extends CI_Controller
         $users = $this->monitor->getUsernameByGroup($id_group);
 
         foreach ($users as $item) {
-            if ($item->is_public != 1)
-                $usernames[] = $item->username;
+            $usernames[] = $item->username;
+                
         }
-
 
         $scrap = new Scrap($usernames);
         $scrap->scrap();

@@ -19,11 +19,9 @@ class MonitorModel extends CI_Model {
     }
 
     public function getUsernameByGroup($id_group){
-        $this->db->select('username');
+        $this->db->select('username,is_public');
         $this->db->from('pp_target');
         $this->db->where('id_group',$id_group);
-        $this->db->where('useruid',null);
-        $this->db->limit(20);
         return $this->db->get()->result();
     }
 

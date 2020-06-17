@@ -20,14 +20,24 @@ class Scrap
 		$temp = 0;
 		foreach ($this->sheet as $line) {
 			$data = $this->scrapingUser($line);
-			$uid = $data->{'graphql'}->{'user'}->{'id'};
-			$name = mysqli_escape_string($data->{'graphql'}->{'user'}->{'full_name'});
-			$stats = 0;
-			if ($data->{'graphql'}->{'user'}->{'is_private'} == false) {
-				$stats = 1;
+			sleep(2);
+			if(!(array)$data){
+				array_push($this->result, array('username' => $line, 'name' => '', 'useruid' => '', 'is_public' => 0));
+			}else {
+				$uid = $data->{'graphql'}->{'user'}->{'id'};
+				if (preg_match('/[^\x20-\x7e]/', $data->{'graphql'}->{'user'}->{'full_name'}) == 1){
+					$name = $line;		
+				}else {
+					$name =  $data->{'graphql'}->{'user'}->{'full_name'};
+				}
+			
+				$stats = 0;
+				if ($data->{'graphql'}->{'user'}->{'is_private'} == false) {
+					$stats = 1;
+				}
+				array_push($this->result, array('username' => $line, 'name' => $name, 'useruid' => $uid, 'is_public' => $stats));
+				$temp++;
 			}
-			array_push($this->result, array('username' => $line, 'name' => $name, 'useruid' => $uid, 'is_public' => $stats));
-			$temp++;
 		}
 	}
 

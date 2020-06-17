@@ -14,7 +14,8 @@ document.querySelector('.scrap').addEventListener('click', e => {
         url: targetUrl,
         method: "POST",
         success: function (data) {
-            location.reload();
+            // location.reload();
+            console.log(data)
         }
     });
 
