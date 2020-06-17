@@ -59,7 +59,7 @@ class Monitor extends CI_Controller
 
         else if ($this->input->server('REQUEST_METHOD') == 'POST') {
             $data['text'] = $this->input->post('hashtag');
-            $this->db->set('deadline','NOW() + INTERVAL 1 DAY',FALSE);
+            $this->db->set('deadline','NOW() + INTERVAL 6 HOUR',FALSE);
             $this->db->insert('pp_hashtag', $data);
             redirect('monitor/hashtags');
         }
